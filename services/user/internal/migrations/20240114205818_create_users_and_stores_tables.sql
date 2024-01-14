@@ -11,7 +11,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE stores (
-                        store_id UUID DEFAULT PRIMARY KEY,
+                        store_id UUID  PRIMARY KEY,
                         store_name VARCHAR(100) NOT NULL,
                         owner_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
                         description TEXT,
