@@ -8,6 +8,12 @@ type ConfigInfo struct {
 	PGUser     string
 	PGDBName   string
 	PGPassword string
+
+	HasherSalt string
+
+	JWTSignKey string
+
+	GRPCPort int
 }
 
 func NewConfig(name, fileType, path string) (*ConfigInfo, error) {
