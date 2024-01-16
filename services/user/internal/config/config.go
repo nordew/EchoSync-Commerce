@@ -20,7 +20,10 @@ func NewConfig(name, fileType, path string) (*ConfigInfo, error) {
 	viper.SetConfigName(name)
 	viper.SetConfigType(fileType)
 	viper.AddConfigPath(path)
-	viper.ReadInConfig()
+
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, err
+	}
 
 	var config ConfigInfo
 
