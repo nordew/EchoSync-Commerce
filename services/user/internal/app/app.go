@@ -20,8 +20,6 @@ func Run() error {
 
 	cfg, err := config.NewConfig("main", "yaml", "./configs")
 
-	logger.Info("config", "config", cfg)
-
 	conn, err := psqlClient.NewPsqlClient(cfg.PGHost, cfg.PGDBName, cfg.PGUser, cfg.PGPassword, cfg.PGPort)
 	if err != nil {
 		logger.Error("failed to connect to pg", err)
