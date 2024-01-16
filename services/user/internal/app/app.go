@@ -18,7 +18,9 @@ import (
 func Run() error {
 	logger := logger.NewLogger()
 
-	cfg, err := config.NewConfig("config", "yaml", "./config")
+	cfg, err := config.NewConfig("main", "yaml", "./configs")
+
+	logger.Info("config", "config", cfg)
 
 	conn, err := psqlClient.NewPsqlClient(cfg.PGHost, cfg.PGDBName, cfg.PGUser, cfg.PGPassword, cfg.PGPort)
 	if err != nil {
