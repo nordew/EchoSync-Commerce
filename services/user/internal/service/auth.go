@@ -36,7 +36,7 @@ func NewAuthService(userStorage UserStorage, auth auth.Authenticator, logger log
 }
 
 func (s *authService) SignUp(ctx context.Context, input entity.SignUpInput) error {
-	hashedPasword, err := s.hasher.Hash(input.Password)
+	hashedPassword, err := s.hasher.Hash(input.Password)
 	if err != nil {
 		s.logger.Error("failed to hash password", err)
 		return err
@@ -46,7 +46,7 @@ func (s *authService) SignUp(ctx context.Context, input entity.SignUpInput) erro
 		UserID:       uuid.New(),
 		Username:     input.Username,
 		Email:        input.Email,
-		PasswordHash: hashedPasword,
+		PasswordHash: hashedPassword,
 		CreatedAt:    time.Now(),
 	}
 
