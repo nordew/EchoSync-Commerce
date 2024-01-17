@@ -11,11 +11,13 @@ import (
 func (h *Handler) signUp(c *fiber.Ctx) error {
 	var input dto.SignUpRequest
 
+	h.logger.Info("parsing input")
 	if err := c.BodyParser(&input); err != nil {
 		writeInvalidJSONResponse(c)
 		return err
 	}
 
+	h.logger.Info("sending request to user service")
 	_, err := h.grpcClient.SignUp(context.Background(), &nordew.SignUpRequest{
 		Username: input.Username,
 		Email:    input.Email,

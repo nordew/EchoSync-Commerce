@@ -23,19 +23,20 @@ func Register(gRPCServer *grpc.Server, service service.UserService) {
 }
 
 func (s *serverAPI) SignUp(ctx context.Context, reqInput *nordew.SignUpRequest) (*nordew.Empty, error) {
-	s.logger.Info(reqInput.GetUsername(), reqInput.GetEmail(), reqInput.GetPassword())
-
+	s.logger.Info("converting input")
 	input := entity.SignUpInput{
 		Username: reqInput.GetUsername(),
 		Email:    reqInput.GetEmail(),
 		Password: reqInput.GetPassword(),
 	}
 
+	s.logger.Info("validating input")
 	if err := input.Validate(); err != nil {
 		return nil, status.Error(400, "invalid input")
 	}
 
-	if err := s.service.SignUp(ctx, input); err != nil {
+	s.logger.Info("signing up")
+	if err := s.service.SignUp(ctx, &input); err != nil {
 		return nil, status.Error(codes.Internal, "failed to sign up")
 	}
 
@@ -52,7 +53,7 @@ func (s *serverAPI) SignIn(ctx context.Context, reqInput *nordew.SignInRequest) 
 		return nil, status.Error(400, "invalid input")
 	}
 
-	accessToken, refreshToken, err := s.service.SignIn(ctx, input)
+	accessToken, refreshToken, err := s.service.SignIn(ctx, &input)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to sign in")
 	}
