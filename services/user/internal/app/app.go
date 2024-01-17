@@ -9,6 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net"
+	"runtime"
+	"runtime/debug"
+	"strings"
 	"userService/internal/config"
 	grpcAuth "userService/internal/grpc"
 	"userService/internal/service"
@@ -23,6 +26,9 @@ func Run() error {
 	logger := logger.NewLogger()
 
 	cfg, err := config.NewConfig("main", "yaml", "./configs")
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
 
 	conn, err := psqlClient.NewPsqlClient(cfg.PGHost, cfg.PGDBName, cfg.PGUser, cfg.PGPassword, cfg.PGPort)
 	if err != nil {
@@ -42,11 +48,17 @@ func Run() error {
 			logging.PayloadReceived, logging.PayloadSent,
 		),
 	}
-
 	recoveryOpts := []recovery.Option{
 		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
 			logger.Error("panic occurred", p)
 
+			if runtimeErr, ok := p.(runtime.Error); ok && strings.Contains(runtimeErr.Error(), "nil pointer dereference") {
+				logger.Error("nil pointer dereference occurred", "stack_trace", string(debug.Stack()))
+
+				return status.Errorf(codes.Internal, "internal error: nil pointer dereference")
+			}
+
+			logger.Error("unhandled panic", "err", p)
 			return status.Errorf(codes.Internal, "internal error")
 		}),
 	}
@@ -55,17 +67,16 @@ func Run() error {
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
 	))
-
 	grpcAuth.Register(gRPCServer, userService)
 
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPCPort))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPCPort))
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
 
 	logger.Info("gRPC user server is listening", "port", cfg.GRPCPort)
 
-	if err := gRPCServer.Serve(l); err != nil {
+	if err := gRPCServer.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}
 
@@ -73,7 +84,7 @@ func Run() error {
 }
 
 func InterceptorLogger(l logger.Logger) logging.Logger {
-	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...interface{}) {
 		l.Info(msg, fields...)
 	})
 }
