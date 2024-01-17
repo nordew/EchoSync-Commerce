@@ -2,7 +2,7 @@ package v1
 
 import (
 	"gateway/pkg/logging"
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 	nordew "github.com/nordew/EchoSync-protos/gen/go/user"
 )
 
@@ -24,18 +24,19 @@ func (h *Handler) Init() *fiber.App {
 
 	auth := app.Group("/auth")
 	auth.Post("/sign-up", h.signUp)
+	auth.Get("/sign-in", h.signIn)
 
 	return app
 }
 
 func writeInvalidJSONResponse(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	return c.Status(fiber.StatusBadRequest).JSON(map[string]string{
 		"error": "invalid json",
 	})
 }
 
 func writeErrorResponse(c *fiber.Ctx, error, errorDescription string) error {
-	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	return c.Status(fiber.StatusInternalServerError).JSON(map[string]string{
 		"error":             error,
 		"error_description": errorDescription,
 	})
