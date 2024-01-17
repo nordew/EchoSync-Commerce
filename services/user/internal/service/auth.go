@@ -35,13 +35,15 @@ func NewAuthService(userStorage UserStorage, auth auth.Authenticator, logger log
 	}
 }
 
-func (s *authService) SignUp(ctx context.Context, input entity.SignUpInput) error {
+func (s *authService) SignUp(ctx context.Context, input *entity.SignUpInput) error {
+	s.logger.Info("hashing password")
 	hashedPassword, err := s.hasher.Hash(input.Password)
 	if err != nil {
 		s.logger.Error("failed to hash password", err)
 		return err
 	}
 
+	s.logger.Info("creating user")
 	user := entity.User{
 		UserID:       uuid.New(),
 		Username:     input.Username,
@@ -50,6 +52,7 @@ func (s *authService) SignUp(ctx context.Context, input entity.SignUpInput) erro
 		CreatedAt:    time.Now(),
 	}
 
+	s.logger.Info("saving user")
 	if err := s.userStorage.Create(ctx, &user); err != nil {
 		s.logger.Error("failed to create user", err)
 		return err
@@ -58,7 +61,7 @@ func (s *authService) SignUp(ctx context.Context, input entity.SignUpInput) erro
 	return nil
 }
 
-func (s *authService) SignIn(ctx context.Context, input entity.SignInInput) (string, string, error) {
+func (s *authService) SignIn(ctx context.Context, input *entity.SignInInput) (string, string, error) {
 	var (
 		hashedPassword string
 		user           *entity.User
