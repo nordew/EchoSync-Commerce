@@ -8,11 +8,14 @@ import (
 	"google.golang.org/grpc/status"
 	"userService/internal/domain/entity"
 	"userService/internal/service"
+	"userService/pkg/logger"
 )
 
 type serverAPI struct {
 	nordew.UnimplementedUserServer
 	service service.UserService
+
+	logger logger.Logger
 }
 
 func Register(gRPCServer *grpc.Server, service service.UserService) {
@@ -20,10 +23,12 @@ func Register(gRPCServer *grpc.Server, service service.UserService) {
 }
 
 func (s *serverAPI) SignUp(ctx context.Context, reqInput *nordew.SignUpRequest) (*nordew.Empty, error) {
+	s.logger.Info(reqInput.GetUsername(), reqInput.GetEmail(), reqInput.GetPassword())
+
 	input := entity.SignUpInput{
-		Username: reqInput.Username,
-		Email:    reqInput.Email,
-		Password: reqInput.Password,
+		Username: reqInput.GetUsername(),
+		Email:    reqInput.GetEmail(),
+		Password: reqInput.GetPassword(),
 	}
 
 	if err := input.Validate(); err != nil {
