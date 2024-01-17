@@ -11,6 +11,7 @@ import (
 func Run() error {
 	logger := logging.NewLogger()
 
+	logger.Info("starting gRPC user client")
 	userServerConn, err := grpc.Dial(":50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
@@ -25,6 +26,7 @@ func Run() error {
 	if err := app.Listen(":8080"); err != nil {
 		return err
 	}
+	logger.Info("started gRPC user client")
 
 	return nil
 }
