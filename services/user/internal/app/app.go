@@ -1,19 +1,10 @@
 package app
 
 import (
-	"context"
 	"fmt"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"net"
-	"runtime"
-	"runtime/debug"
-	"strings"
+	"userService/internal/app/grpcApp"
 	"userService/internal/config"
-	grpcAuth "userService/internal/grpc"
 	"userService/internal/service"
 	"userService/internal/storage"
 	"userService/pkg/auth"
@@ -43,31 +34,7 @@ func Run() error {
 
 	userService := service.NewAuthService(userStorage, authenticator, logger, passwordHasher)
 
-	loggingOpts := []logging.Option{
-		logging.WithLogOnEvents(
-			logging.PayloadReceived, logging.PayloadSent,
-		),
-	}
-	recoveryOpts := []recovery.Option{
-		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
-			logger.Error("panic occurred", p)
-
-			if runtimeErr, ok := p.(runtime.Error); ok && strings.Contains(runtimeErr.Error(), "nil pointer dereference") {
-				logger.Error("nil pointer dereference occurred", "stack_trace", string(debug.Stack()))
-
-				return status.Errorf(codes.Internal, "internal error: nil pointer dereference")
-			}
-
-			logger.Error("unhandled panic", "err", p)
-			return status.Errorf(codes.Internal, "internal error")
-		}),
-	}
-
-	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		recovery.UnaryServerInterceptor(recoveryOpts...),
-		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
-	))
-	grpcAuth.Register(gRPCServer, userService)
+	srv := grpcApp.New(logger, userService)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPCPort))
 	if err != nil {
@@ -76,15 +43,9 @@ func Run() error {
 
 	logger.Info("gRPC user server is listening", "port", cfg.GRPCPort)
 
-	if err := gRPCServer.Serve(listener); err != nil {
+	if err := srv.GRPCServer.Serve(listener); err != nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}
 
 	return nil
-}
-
-func InterceptorLogger(l logger.Logger) logging.Logger {
-	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...interface{}) {
-		l.Info(msg, fields...)
-	})
 }
