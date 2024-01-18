@@ -36,14 +36,12 @@ func NewAuthService(userStorage UserStorage, auth auth.Authenticator, logger log
 }
 
 func (s *authService) SignUp(ctx context.Context, input *entity.SignUpInput) error {
-	s.logger.Info("hashing password")
 	hashedPassword, err := s.hasher.Hash(input.Password)
 	if err != nil {
 		s.logger.Error("failed to hash password", err)
 		return err
 	}
 
-	s.logger.Info("creating user")
 	user := entity.User{
 		UserID:       uuid.New(),
 		Username:     input.Username,
@@ -52,7 +50,6 @@ func (s *authService) SignUp(ctx context.Context, input *entity.SignUpInput) err
 		CreatedAt:    time.Now(),
 	}
 
-	s.logger.Info("saving user")
 	if err := s.userStorage.Create(ctx, &user); err != nil {
 		s.logger.Error("failed to create user", err)
 		return err
@@ -73,10 +70,12 @@ func (s *authService) SignIn(ctx context.Context, input *entity.SignInInput) (st
 	wg.Add(2)
 
 	go func() {
+		defer wg.Done()
 		hashedPassword, hashErr = s.hasher.Hash(input.Password)
 	}()
 
 	go func() {
+		defer wg.Done()
 		user, getUserErr = s.userStorage.Get(ctx, input.Email)
 	}()
 
