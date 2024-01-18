@@ -3,7 +3,11 @@ package grpcStore
 import (
 	"context"
 	"github.com/google/uuid"
+<<<<<<< HEAD
 	nordew "github.com/nordew/EchoSync-protos/gen/go/store"
+=======
+	grpcStore "github.com/nordew/EchoSync-protos/gen/go/store"
+>>>>>>> marketService
 	"google.golang.org/grpc"
 	"marketService/internal/domain/entity"
 	"marketService/internal/services"
@@ -12,7 +16,11 @@ import (
 )
 
 type grpcServer struct {
+<<<<<<< HEAD
 	nordew.UnimplementedStoreServiceServer
+=======
+	grpcStore.UnimplementedStoreServiceServer
+>>>>>>> marketService
 
 	storeService services.StoreService
 
@@ -20,7 +28,11 @@ type grpcServer struct {
 }
 
 func Register(s *grpc.Server, logger logger.Logger) {
+<<<<<<< HEAD
 	nordew.RegisterStoreServiceServer(s, &grpcServer{
+=======
+	grpcStore.RegisterStoreServiceServer(s, &grpcServer{
+>>>>>>> marketService
 		logger: logger,
 	})
 }
@@ -32,7 +44,11 @@ func NewStoreService(storeService services.StoreService, logger logger.Logger) *
 	}
 }
 
+<<<<<<< HEAD
 func (s *grpcServer) CreateStore(ctx context.Context, req *nordew.CreateStoreRequest) (*nordew.Empty, error) {
+=======
+func (s *grpcServer) CreateStore(ctx context.Context, req *grpcStore.CreateStoreRequest) (*grpcStore.Empty, error) {
+>>>>>>> marketService
 	const op = "grpcServer.CreateStore"
 
 	parsedUUID, err := uuid.Parse(req.OwnerId)
@@ -53,5 +69,5 @@ func (s *grpcServer) CreateStore(ctx context.Context, req *nordew.CreateStoreReq
 		return nil, err
 	}
 
-	return &nordew.Empty{}, nil
+	return &grpcStore.Empty{}, nil
 }
