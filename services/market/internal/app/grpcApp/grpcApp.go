@@ -1,0 +1,65 @@
+package grpcApp
+
+import (
+	"context"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	grpcStore "marketService/internal/grpc"
+	"marketService/internal/services"
+	"marketService/pkg/logger"
+	"runtime"
+	"runtime/debug"
+	"strings"
+)
+
+type grpcApp struct {
+	storeService services.StoreService
+	GRPCServer   *grpc.Server
+
+	logger logger.Logger
+}
+
+func New(storeService services.StoreService, logger logger.Logger) *grpcApp {
+	loggingOpts := []logging.Option{
+		logging.WithLogOnEvents(
+			logging.PayloadReceived, logging.PayloadSent,
+		),
+	}
+
+	recoveryOpts := []recovery.Option{
+		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
+			logger.Error("panic occurred", p)
+
+			if runtimeErr, ok := p.(runtime.Error); ok && strings.Contains(runtimeErr.Error(), "nil pointer dereference") {
+				logger.Error("nil pointer dereference occurred", "stack_trace", string(debug.Stack()))
+
+				return status.Errorf(codes.Internal, "internal error: nil pointer dereference")
+			}
+
+			logger.Error("unhandled panic", "err", p)
+			return status.Errorf(codes.Internal, "internal error")
+		}),
+	}
+
+	gRPCServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		recovery.UnaryServerInterceptor(recoveryOpts...),
+		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
+	))
+
+	grpcStore.Register(gRPCServer, logger)
+
+	return &grpcApp{
+		storeService: storeService,
+		GRPCServer:   gRPCServer,
+		logger:       logger,
+	}
+}
+
+func InterceptorLogger(l logger.Logger) logging.Logger {
+	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...interface{}) {
+		l.Info(msg, fields...)
+	})
+}
