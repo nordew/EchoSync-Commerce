@@ -30,13 +30,13 @@ func (h *Handler) Init() *fiber.App {
 }
 
 func writeInvalidJSONResponse(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusBadRequest).JSON(map[string]string{
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 		"error": "invalid json",
 	})
 }
 
 func writeErrorResponse(c *fiber.Ctx, error, errorDescription string) error {
-	return c.Status(fiber.StatusInternalServerError).JSON(map[string]string{
+	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"error":             error,
 		"error_description": errorDescription,
 	})
