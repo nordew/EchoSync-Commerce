@@ -2,10 +2,13 @@ package grpcAuth
 
 import (
 	"context"
+	"fmt"
 	nordew "github.com/nordew/EchoSync-protos/gen/go/user"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"regexp"
+	"unicode/utf8"
 	"userService/internal/domain/entity"
 	"userService/internal/service"
 	"userService/pkg/logger"
@@ -18,8 +21,8 @@ type serverAPI struct {
 	logger logger.Logger
 }
 
-func Register(gRPCServer *grpc.Server, service service.UserService) {
-	nordew.RegisterUserServer(gRPCServer, &serverAPI{service: service})
+func Register(gRPCServer *grpc.Server, service service.UserService, logger logger.Logger) {
+	nordew.RegisterUserServer(gRPCServer, &serverAPI{service: service, logger: logger})
 }
 
 func (s *serverAPI) SignUp(ctx context.Context, reqInput *nordew.SignUpRequest) (*nordew.Empty, error) {
@@ -30,9 +33,8 @@ func (s *serverAPI) SignUp(ctx context.Context, reqInput *nordew.SignUpRequest) 
 		Password: reqInput.GetPassword(),
 	}
 
-	s.logger.Info("validating input")
-	if err := input.Validate(); err != nil {
-		return nil, status.Error(400, "invalid input")
+	if err := validateSignUpInput(input.Username, input.Email, input.Password); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	s.logger.Info("signing up")
@@ -49,8 +51,8 @@ func (s *serverAPI) SignIn(ctx context.Context, reqInput *nordew.SignInRequest) 
 		Password: reqInput.Password,
 	}
 
-	if err := input.Validate(); err != nil {
-		return nil, status.Error(400, "invalid input")
+	if !isValidEmail(input.Email) {
+		return nil, status.Error(codes.InvalidArgument, "invalid email")
 	}
 
 	accessToken, refreshToken, err := s.service.SignIn(ctx, &input)
@@ -64,4 +66,28 @@ func (s *serverAPI) SignIn(ctx context.Context, reqInput *nordew.SignInRequest) 
 	}
 
 	return resp, nil
+}
+
+func isValidEmail(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+
+	re := regexp.MustCompile(emailRegex)
+
+	return re.MatchString(email)
+}
+
+func validateSignUpInput(username, email, password string) error {
+	if utf8.RuneCountInString(username) < 3 {
+		return fmt.Errorf("username must be at least 3 characters long")
+	}
+
+	if utf8.RuneCountInString(password) < 8 {
+		return fmt.Errorf("password must be at least 8 characters long")
+	}
+
+	if !isValidEmail(email) {
+		return fmt.Errorf("invalid email address")
+	}
+
+	return nil
 }
