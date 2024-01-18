@@ -3,7 +3,7 @@ package grpcStore
 import (
 	"context"
 	"github.com/google/uuid"
-	nordew "github.com/nordew/EchoSync-protos/gen/go/market"
+	nordew "github.com/nordew/EchoSync-protos/gen/go/store"
 	"google.golang.org/grpc"
 	"marketService/internal/domain/entity"
 	"marketService/internal/services"
@@ -12,7 +12,7 @@ import (
 )
 
 type grpcServer struct {
-	nordew.UnimplementedMarketServiceServer
+	nordew.UnimplementedStoreServiceServer
 
 	storeService services.StoreService
 
@@ -20,7 +20,7 @@ type grpcServer struct {
 }
 
 func Register(s *grpc.Server, logger logger.Logger) {
-	nordew.RegisterMarketServiceServer(s, &grpcServer{
+	nordew.RegisterStoreServiceServer(s, &grpcServer{
 		logger: logger,
 	})
 }
@@ -32,7 +32,7 @@ func NewStoreService(storeService services.StoreService, logger logger.Logger) *
 	}
 }
 
-func (s *grpcServer) CreateStore(ctx context.Context, req *nordew.CreateMarketRequest) (*nordew.Empty, error) {
+func (s *grpcServer) CreateStore(ctx context.Context, req *nordew.CreateStoreRequest) (*nordew.Empty, error) {
 	const op = "grpcServer.CreateStore"
 
 	parsedUUID, err := uuid.Parse(req.OwnerId)
