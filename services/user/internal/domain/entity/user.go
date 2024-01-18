@@ -1,12 +1,9 @@
 package entity
 
 import (
-	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 	"time"
 )
-
-var validate *validator.Validate
 
 type User struct {
 	UserID       uuid.UUID
@@ -19,20 +16,12 @@ type User struct {
 }
 
 type SignUpInput struct {
-	Username string `validate:"required,gte=2"`
-	Email    string `validate:"required,email"`
-	Password string `validate:"required,gte=6"`
+	Username string
+	Email    string
+	Password string
 }
 
 type SignInInput struct {
-	Email    string `validate:"required,email"`
-	Password string `validate:"required,gte=6"`
-}
-
-func (i SignUpInput) Validate() error {
-	return validate.Struct(i)
-}
-
-func (i SignInInput) Validate() error {
-	return validate.Struct(i)
+	Email    string
+	Password string
 }
