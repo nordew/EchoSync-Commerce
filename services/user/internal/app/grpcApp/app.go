@@ -51,7 +51,7 @@ func New(logger logger.Logger, userService service.UserService) *grpcApp {
 	))
 
 	logger.Info("registering gRPC server")
-	grpcAuth.Register(gRPCServer, userService)
+	grpcAuth.Register(gRPCServer, userService, logger)
 
 	return &grpcApp{
 		userService: userService,
