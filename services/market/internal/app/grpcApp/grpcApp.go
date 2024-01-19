@@ -7,19 +7,19 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	grpcStore "marketService/internal/grpc"
 	"marketService/internal/services"
 	"marketService/pkg/logger"
 	"runtime"
 	"runtime/debug"
 	"strings"
+
+	grpcStore "marketService/internal/grpc"
 )
 
 type grpcApp struct {
 	storeService services.StoreService
 	GRPCServer   *grpc.Server
-
-	logger logger.Logger
+	logger       logger.Logger
 }
 
 func New(storeService services.StoreService, logger logger.Logger) *grpcApp {
@@ -49,7 +49,7 @@ func New(storeService services.StoreService, logger logger.Logger) *grpcApp {
 		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
 	))
 
-	grpcStore.Register(gRPCServer, logger)
+	grpcStore.Register(gRPCServer, storeService, logger)
 
 	return &grpcApp{
 		storeService: storeService,
