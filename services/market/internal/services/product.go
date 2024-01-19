@@ -53,6 +53,58 @@ func (s *productService) Create(ctx context.Context, storeID uuid.UUID, productN
 	return nil
 }
 
+func (s *productService) GetByStoreID(ctx context.Context, storeID uuid.UUID) ([]*entity.Product, error) {
+	const op = "productService.GetByStoreID"
+
+	products, err := s.productStorage.GetByStoreID(ctx, storeID)
+	if err != nil {
+		s.logger.Error(op, err.Error())
+		return nil, err
+	}
+
+	return products, nil
+}
+
+func (s *productService) GetByID(ctx context.Context, productID uuid.UUID) (*entity.Product, error) {
+	const op = "productService.GetByID"
+
+	product, err := s.productStorage.GetByID(ctx, productID)
+	if err != nil {
+		s.logger.Error(op, err.Error())
+		return nil, err
+	}
+
+	return product, nil
+}
+
+func (s *productService) Update(ctx context.Context, product *entity.Product) error {
+	const op = "productService.Update"
+
+	if err := validateProduct(product); err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	err := s.productStorage.Update(ctx, product)
+	if err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *productService) Delete(ctx context.Context, productID uuid.UUID) error {
+	const op = "productService.Delete"
+
+	if err := s.productStorage.Delete(ctx, productID); err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func validateProduct(product *entity.Product) error {
 	if product.Price < 0 {
 		return ErrInvalidProductPrice
