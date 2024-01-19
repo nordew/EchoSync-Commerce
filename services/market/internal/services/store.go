@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"marketService/internal/domain/entity"
 	"marketService/pkg/logger"
+	"time"
 	"unicode/utf8"
 )
 
@@ -19,28 +20,31 @@ type storeService struct {
 	logger logger.Logger
 }
 
-func NewStoreService(storeStorage StoreStorage, logger logger.Logger) *storeService {
+func NewStoreService(storeStorage StoreStorage, logger logger.Logger) StoreService {
 	return &storeService{
 		storeStorage: storeStorage,
 		logger:       logger,
 	}
 }
 
-func (s *storeService) Create(ctx context.Context, store *entity.Store) error {
+func (s *storeService) Create(ctx context.Context, name string, ownerID uuid.UUID) error {
 	const op = "storeService.Create"
 
+	s.logger.Info(op, "creating store\n")
 	createdStore := &entity.Store{
 		ID:          uuid.New(),
-		Name:        store.Name,
-		OwnerUserID: store.OwnerUserID,
-		CreatedAt:   store.CreatedAt,
+		Name:        name,
+		OwnerUserID: ownerID,
+		CreatedAt:   time.Now(),
 	}
 
+	s.logger.Info(op, "validating store\n")
 	if err := validateStore(createdStore); err != nil {
 		s.logger.Error(op, err.Error())
 		return err
 	}
 
+	s.logger.Info(op, "creating store\n")
 	err := s.storeStorage.Create(ctx, createdStore)
 	if err != nil {
 		s.logger.Error(op, err.Error())
