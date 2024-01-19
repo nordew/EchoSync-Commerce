@@ -27,9 +27,12 @@ func Run() error {
 	}
 
 	storeStorage := storage.NewStoreStorage(conn, logging)
-	storeService := services.NewStoreService(storeStorage, logging)
+	productStorage := storage.NewProductStorage(conn, logging)
 
-	grpcSrv := grpcApp.New(storeService, logging)
+	storeService := services.NewStoreService(storeStorage, logging)
+	productService := services.NewProductService(productStorage, logging)
+
+	grpcSrv := grpcApp.New(storeService, productService, logging)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPCPort))
 	if err != nil {
