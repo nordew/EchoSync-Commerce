@@ -17,12 +17,13 @@ import (
 )
 
 type grpcApp struct {
-	storeService services.StoreService
-	GRPCServer   *grpc.Server
-	logger       logger.Logger
+	storeService   services.StoreService
+	productService services.ProductService
+	GRPCServer     *grpc.Server
+	logger         logger.Logger
 }
 
-func New(storeService services.StoreService, logger logger.Logger) *grpcApp {
+func New(storeService services.StoreService, productService services.ProductService, logger logger.Logger) *grpcApp {
 	loggingOpts := []logging.Option{
 		logging.WithLogOnEvents(
 			logging.PayloadReceived, logging.PayloadSent,
@@ -49,7 +50,7 @@ func New(storeService services.StoreService, logger logger.Logger) *grpcApp {
 		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
 	))
 
-	grpcStore.Register(gRPCServer, storeService, logger)
+	grpcStore.Register(gRPCServer, storeService, productService, logger)
 
 	return &grpcApp{
 		storeService: storeService,
