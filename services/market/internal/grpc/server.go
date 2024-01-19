@@ -2,11 +2,16 @@ package grpcStore
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	grpcStore "github.com/nordew/EchoSync-protos/gen/go/store"
 	"google.golang.org/grpc"
 	"marketService/internal/services"
 	"marketService/pkg/logger"
+)
+
+var (
+	ErrInvalidUUId = errors.New("invalid uuid")
 )
 
 type grpcServer struct {
@@ -29,8 +34,8 @@ func (s *grpcServer) CreateStore(ctx context.Context, req *grpcStore.CreateStore
 
 	parsedUUID, err := uuid.Parse(req.GetOwnerId())
 	if err != nil {
-		s.logger.Error(op, "failed to parse UUID", err.Error())
-		return nil, err
+		s.logger.Error(op, err.Error())
+		return nil, ErrInvalidUUId
 	}
 
 	err = s.storeService.Create(context.Background(), req.GetName(), parsedUUID)
