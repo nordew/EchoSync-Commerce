@@ -12,18 +12,20 @@ import (
 type Handler struct {
 	logger logging.Logger
 
-	grpcUserClient  grpcUser.UserClient
-	grpcStoreClient grpcStore.StoreServiceClient
+	grpcUserClient    grpcUser.UserClient
+	grpcStoreClient   grpcStore.StoreServiceClient
+	grpcProductClient grpcStore.ProductServiceClient
 
 	auth auth.Authenticator
 }
 
-func NewHandler(logger logging.Logger, grpcUserClient grpcUser.UserClient, grpcStoreClient grpcStore.StoreServiceClient, auth auth.Authenticator) *Handler {
+func NewHandler(logger logging.Logger, grpcUserClient grpcUser.UserClient, grpcStoreClient grpcStore.StoreServiceClient, gprcProductClient grpcStore.ProductServiceClient, auth auth.Authenticator) *Handler {
 	return &Handler{
-		logger:          logger,
-		grpcUserClient:  grpcUserClient,
-		grpcStoreClient: grpcStoreClient,
-		auth:            auth,
+		logger:            logger,
+		grpcUserClient:    grpcUserClient,
+		grpcStoreClient:   grpcStoreClient,
+		grpcProductClient: gprcProductClient,
+		auth:              auth,
 	}
 }
 
@@ -40,6 +42,12 @@ func (h *Handler) Init() *fiber.App {
 	market.Use(h.AuthMiddleware)
 	{
 		market.Post("/store", h.createStore)
+	}
+
+	product := app.Group("/product")
+	product.Use(h.AuthMiddleware)
+	{
+		product.Post("/create", h.createProduct)
 	}
 
 	return app
