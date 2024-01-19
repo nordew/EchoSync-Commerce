@@ -2,10 +2,10 @@ package services
 
 import (
 	"context"
-	"marketService/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type StoreService interface {
 	// Create creates a new store
-	Create(ctx context.Context, store *entity.Store) error
+	Create(ctx context.Context, name string, ownerID uuid.UUID) error
 }
