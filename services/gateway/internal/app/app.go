@@ -36,8 +36,9 @@ func Run() error {
 
 	userClient := grpcUser.NewUserClient(userServerConn)
 	storeClient := grpcStore.NewStoreServiceClient(storeClientConn)
+	productClient := grpcStore.NewProductServiceClient(storeClientConn)
 
-	handler := v1.NewHandler(logger, userClient, storeClient, authenticator)
+	handler := v1.NewHandler(logger, userClient, storeClient, productClient, authenticator)
 
 	app := handler.Init()
 
