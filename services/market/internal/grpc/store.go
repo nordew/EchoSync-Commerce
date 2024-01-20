@@ -23,3 +23,7 @@ func (s *grpcServer) CreateStore(ctx context.Context, req *grpcStore.CreateStore
 
 	return &grpcStore.Empty{}, nil
 }
+
+func (s *grpcServer) GetMarket(ctx context.Context, request *grpcStore.GetStoreRequest) (*grpcStore.GetStoreResponse, error) {
+	panic("implement me")
+}
