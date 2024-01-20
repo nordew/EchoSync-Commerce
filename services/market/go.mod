@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1
 	github.com/jackc/pgx v3.6.2+incompatible
-	github.com/nordew/EchoSync-protos v0.0.0-20240119171744-32e70fd0122d
+	github.com/nordew/EchoSync-protos v0.0.0-20240120194055-82a2c9f97e61
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.59.0
 )
