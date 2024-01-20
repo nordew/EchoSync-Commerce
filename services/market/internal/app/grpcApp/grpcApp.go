@@ -53,9 +53,10 @@ func New(storeService services.StoreService, productService services.ProductServ
 	grpcStore.Register(gRPCServer, storeService, productService, logger)
 
 	return &grpcApp{
-		storeService: storeService,
-		GRPCServer:   gRPCServer,
-		logger:       logger,
+		storeService:   storeService,
+		productService: productService,
+		GRPCServer:     gRPCServer,
+		logger:         logger,
 	}
 }
 
