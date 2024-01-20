@@ -10,7 +10,7 @@ type JSONLogger struct {
 }
 
 func NewLogger() Logger {
-	return slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	return slog.New(slog.NewTextHandler(os.Stdout, nil))
 }
 
 func (l *JSONLogger) Debug(msg string, fields ...interface{}) {
