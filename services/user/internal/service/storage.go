@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"userService/internal/domain/entity"
 )
 
@@ -12,4 +13,7 @@ type UserStorage interface {
 
 	// Get retrieves a user from the storage based on the email.
 	Get(ctx context.Context, email string) (*entity.User, error)
+
+	// CreateRefreshToken creates a new refresh token for the user.
+	CreateRefreshToken(ctx context.Context, userID uuid.UUID, token string) error
 }
