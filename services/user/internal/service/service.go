@@ -10,4 +10,7 @@ type UserService interface {
 
 	// SignIn returns a new access token and refresh token.
 	SignIn(ctx context.Context, input *entity.SignInInput) (string, string, error)
+
+	// RefreshTokens returns a new access token and refresh token.
+	RefreshTokens(ctx context.Context, refreshToken string) (string, string, error)
 }
