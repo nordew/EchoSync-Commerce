@@ -1,4 +1,4 @@
-package grpcStore
+package grpcServer
 
 import (
 	"errors"
@@ -24,7 +24,11 @@ type grpcServer struct {
 
 func Register(s *grpc.Server, storeService services.StoreService, productService services.ProductService, logger logger.Logger) {
 	grpcStore.RegisterStoreServiceServer(s, &grpcServer{
-		storeService:   storeService,
+		storeService: storeService,
+		logger:       logger,
+	})
+
+	grpcStore.RegisterProductServiceServer(s, &grpcServer{
 		productService: productService,
 		logger:         logger,
 	})

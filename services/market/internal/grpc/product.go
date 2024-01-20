@@ -1,4 +1,4 @@
-package grpcStore
+package grpcServer
 
 import (
 	"context"
