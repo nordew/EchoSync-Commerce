@@ -36,6 +36,7 @@ func (h *Handler) Init() *fiber.App {
 	{
 		auth.Post("/sign-up", h.signUp)
 		auth.Get("/sign-in", h.signIn)
+		auth.Get("/refresh", h.refresh)
 	}
 
 	market := app.Group("/market")
