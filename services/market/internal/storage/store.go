@@ -48,7 +48,7 @@ func (s *storeStorage) Create(ctx context.Context, store *entity.Store) error {
 		return err
 	}
 
-	_, err = s.conn.ExecEx(ctx, "UPDATE users SET stores_active = stores_active + 1 WHERE user_id = owner_user_id", nil)
+	_, err = s.conn.ExecEx(ctx, "UPDATE users SET stores_active = stores_active + 1 WHERE user_id = $1", nil, store.OwnerUserID)
 	if err != nil {
 		s.logging.Error("failed to update user stores_active", err.Error())
 		return err
