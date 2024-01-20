@@ -68,6 +68,20 @@ func (s *serverAPI) SignIn(ctx context.Context, reqInput *nordew.SignInRequest) 
 	return resp, nil
 }
 
+func (s *serverAPI) RefreshToken(ctx context.Context, reqInput *nordew.RefreshRequest) (*nordew.RefreshResponse, error) {
+	accessToken, refreshToken, err := s.service.RefreshTokens(ctx, reqInput.RefreshToken)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to refresh token")
+	}
+
+	resp := &nordew.RefreshResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}
+
+	return resp, nil
+}
+
 func isValidEmail(email string) bool {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
