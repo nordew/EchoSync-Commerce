@@ -13,7 +13,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	grpcStore "marketService/internal/grpc"
+	grpcServer "marketService/internal/grpc"
 )
 
 type grpcApp struct {
@@ -50,7 +50,7 @@ func New(storeService services.StoreService, productService services.ProductServ
 		logging.UnaryServerInterceptor(InterceptorLogger(logger), loggingOpts...),
 	))
 
-	grpcStore.Register(gRPCServer, storeService, productService, logger)
+	grpcServer.Register(gRPCServer, storeService, productService, logger)
 
 	return &grpcApp{
 		storeService:   storeService,
