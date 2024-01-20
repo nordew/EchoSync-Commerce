@@ -44,13 +44,13 @@ func (s *storeStorage) Create(ctx context.Context, store *entity.Store) error {
 		"INSERT INTO stores (store_id, store_name, owner_user_id, products_count, is_active, created_at) VALUES($1, $2, $3, $4, $5, $6)",
 		nil, store.ID, store.Name, store.OwnerUserID, store.ProductsCount, store.IsActive, store.CreatedAt)
 	if err != nil {
-		s.logging.Error("failed to create store", err.Error())
+		s.logging.Error(op, err.Error())
 		return err
 	}
 
 	_, err = s.conn.ExecEx(ctx, "UPDATE users SET stores_active = stores_active + 1 WHERE user_id = $1", nil, store.OwnerUserID)
 	if err != nil {
-		s.logging.Error("failed to update user stores_active", err.Error())
+		s.logging.Error(op, err.Error())
 		return err
 	}
 
