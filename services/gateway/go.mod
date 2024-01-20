@@ -6,7 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/google/uuid v1.5.0
-	github.com/nordew/EchoSync-protos v0.0.0-20240119171744-32e70fd0122d
+	github.com/nordew/EchoSync-protos v0.0.0-20240120200447-2bcd4a6490c6
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.60.1
 )
