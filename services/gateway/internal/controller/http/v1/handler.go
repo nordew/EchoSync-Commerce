@@ -19,12 +19,12 @@ type Handler struct {
 	auth auth.Authenticator
 }
 
-func NewHandler(logger logging.Logger, grpcUserClient grpcUser.UserClient, grpcStoreClient grpcStore.StoreServiceClient, gprcProductClient grpcStore.ProductServiceClient, auth auth.Authenticator) *Handler {
+func NewHandler(logger logging.Logger, grpcUserClient grpcUser.UserClient, grpcStoreClient grpcStore.StoreServiceClient, grpcProductClient grpcStore.ProductServiceClient, auth auth.Authenticator) *Handler {
 	return &Handler{
 		logger:            logger,
 		grpcUserClient:    grpcUserClient,
 		grpcStoreClient:   grpcStoreClient,
-		grpcProductClient: gprcProductClient,
+		grpcProductClient: grpcProductClient,
 		auth:              auth,
 	}
 }
