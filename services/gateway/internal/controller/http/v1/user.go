@@ -55,3 +55,22 @@ func (h *Handler) signIn(c *fiber.Ctx) error {
 
 	return nil
 }
+
+func (h *Handler) refresh(c *fiber.Ctx) error {
+	refreshToken := c.Get("refresh_token")
+
+	resp, err := h.grpcUserClient.Refresh(context.Background(), &grpcUser.RefreshRequest{
+		RefreshToken: refreshToken,
+	})
+	if err != nil {
+		writeErrorResponse(c, "internal_error", err.Error())
+		return err
+	}
+
+	c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"access_token":  resp.AccessToken,
+		"refresh_token": resp.RefreshToken,
+	})
+
+	return nil
+}
