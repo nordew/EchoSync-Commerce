@@ -6,7 +6,7 @@ require (
 	github.com/google/uuid v1.5.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.1
 	github.com/jackc/pgx v3.6.2+incompatible
-	github.com/nordew/EchoSync-protos v0.0.0-20240119171744-32e70fd0122d
+	github.com/nordew/EchoSync-protos v0.0.0-20240120194055-82a2c9f97e61
 	github.com/spf13/viper v1.18.2
 	google.golang.org/grpc v1.59.0
 )
@@ -21,6 +21,7 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/nordew/EchoSync v0.0.0-20240120184625-8470daa72e09 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect

@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	ErrInvalidProductName     = errors.New("invalid product name")
 	ErrInvalidProductPrice    = errors.New("invalid product price")
 	ErrInvalidProductQuantity = errors.New("invalid product quantity")
 )
@@ -106,9 +107,15 @@ func (s *productService) Delete(ctx context.Context, productID uuid.UUID) error 
 }
 
 func validateProduct(product *entity.Product) error {
-	if product.Price < 0 {
+	if product.ProductName == "" {
+		return ErrInvalidProductName
+	}
+
+	if product.Price <= 0 {
 		return ErrInvalidProductPrice
-	} else if product.Quantity < 0 {
+	}
+
+	if product.Quantity <= 0 {
 		return ErrInvalidProductQuantity
 	}
 

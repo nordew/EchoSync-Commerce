@@ -9,6 +9,15 @@ import (
 type StoreStorage interface {
 	// Create creates a new store
 	Create(ctx context.Context, store *entity.Store) error
+
+	// GetByOwnerID returns all stores by owner id
+	GetByID(ctx context.Context, storeID uuid.UUID) (*entity.Store, error)
+
+	// Update updates store
+	Update(ctx context.Context, storeName string, storeID uuid.UUID) error
+
+	// Delete deletes store
+	Delete(ctx context.Context, storeID uuid.UUID) error
 }
 
 type ProductStorage interface {

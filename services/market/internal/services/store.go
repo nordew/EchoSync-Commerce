@@ -54,6 +54,45 @@ func (s *storeService) Create(ctx context.Context, name string, ownerID uuid.UUI
 	return nil
 }
 
+func (s *storeService) GetByID(ctx context.Context, storeID uuid.UUID) (*entity.Store, error) {
+	const op = "storeService.GetByID"
+
+	store, err := s.storeStorage.GetByID(ctx, storeID)
+	if err != nil {
+		s.logger.Error(op, err.Error())
+		return nil, err
+	}
+
+	return store, nil
+}
+
+func (s *storeService) Update(ctx context.Context, storeName string, storeID uuid.UUID) error {
+	const op = "storeService.Update"
+
+	if err := validateStore(&entity.Store{Name: storeName}); err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	if err := s.storeStorage.Update(ctx, storeName, storeID); err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *storeService) Delete(ctx context.Context, storeID uuid.UUID) error {
+	const op = "storeService.Delete"
+
+	if err := s.storeStorage.Delete(ctx, storeID); err != nil {
+		s.logger.Error(op, err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func validateStore(store *entity.Store) error {
 	if utf8.RuneCountInString(store.Name) > 40 || utf8.RuneCountInString(store.Name) < 3 {
 		return ErrInvalidStoreName
