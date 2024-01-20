@@ -27,17 +27,15 @@ func Run() error {
 		return err
 	}
 
-	storeClientConn, err := grpc.Dial(":50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	marketServerConn, err := grpc.Dial(":50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
-
 	authenticator := auth.NewAuth(cfg.JWTSignKey, logger)
 
 	userClient := grpcUser.NewUserClient(userServerConn)
-	storeClient := grpcStore.NewStoreServiceClient(storeClientConn)
-	productClient := grpcStore.NewProductServiceClient(storeClientConn)
-
+	storeClient := grpcStore.NewStoreServiceClient(marketServerConn)
+	productClient := grpcStore.NewProductServiceClient(marketServerConn)
 	handler := v1.NewHandler(logger, userClient, storeClient, productClient, authenticator)
 
 	app := handler.Init()
