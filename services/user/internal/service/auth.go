@@ -106,3 +106,32 @@ func (s *authService) SignIn(ctx context.Context, input *entity.SignInInput) (st
 
 	return accessToken, refreshToken, nil
 }
+
+func (s *authService) RefreshTokens(ctx context.Context, refreshToken string) (string, string, error) {
+	claims, err := s.auth.ParseToken(refreshToken)
+	if err != nil {
+		s.logger.Error("failed to parse refresh token", err)
+		return "", "", err
+	}
+
+	accessToken, newRefreshToken, err := s.auth.GenerateTokens(&auth.GenerateTokenClaimsOptions{
+		UserId: claims.Sub,
+	})
+	if err != nil {
+		s.logger.Error("failed to generate tokens", err)
+		return "", "", err
+	}
+
+	parsedUUID, err := uuid.Parse(claims.Sub)
+	if err != nil {
+		s.logger.Error("failed to parse uuid", err)
+		return "", "", err
+	}
+
+	if err := s.userStorage.CreateRefreshToken(ctx, parsedUUID, newRefreshToken); err != nil {
+		s.logger.Error("failed to create refresh token", err)
+		return "", "", err
+	}
+
+	return accessToken, newRefreshToken, nil
+}
