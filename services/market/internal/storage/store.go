@@ -94,5 +94,17 @@ func (s *storeStorage) Delete(ctx context.Context, storeID uuid.UUID) error {
 		return err
 	}
 
+	if err := s.conn.QueryRowEx(ctx, "SELECT owner_user_id FROM stores WHERE store_id = $1", nil, storeID).
+		Scan(&storeID); err != nil {
+		s.logging.Error(op, err.Error())
+		return err
+	}
+
+	_, err = s.conn.ExecEx(ctx, "UPDATE users SET stores_active = stores_active - 1 WHERE user_id = $1", nil, storeID)
+	if err != nil {
+		s.logging.Error(op, err.Error())
+		return err
+	}
+
 	return nil
 }
