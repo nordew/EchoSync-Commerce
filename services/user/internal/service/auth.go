@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/google/uuid"
-	"sync"
 	"time"
 	"userService/internal/domain/entity"
 	"userService/pkg/auth"
@@ -59,36 +58,16 @@ func (s *authService) SignUp(ctx context.Context, input *entity.SignUpInput) err
 }
 
 func (s *authService) SignIn(ctx context.Context, input *entity.SignInInput) (string, string, error) {
-	var (
-		hashedPassword string
-		user           *entity.User
-		hashErr        error
-		getUserErr     error
-	)
+	hashedPassword, err := s.hasher.Hash(input.Password)
 
-	var wg sync.WaitGroup
-	wg.Add(2)
+	user, err := s.userStorage.Get(ctx, input.Email)
 
-	go func() {
-		defer wg.Done()
-		hashedPassword, hashErr = s.hasher.Hash(input.Password)
-	}()
-
-	go func() {
-		defer wg.Done()
-		user, getUserErr = s.userStorage.Get(ctx, input.Email)
-	}()
-
-	wg.Wait()
-
-	if hashErr != nil {
-		s.logger.Error("failed to hash password", hashErr)
-		return "", "", hashErr
-	}
-
-	if getUserErr != nil {
-		s.logger.Error("failed to get user", getUserErr)
-		return "", "", getUserErr
+	accessToken, refreshToken, err := s.auth.GenerateTokens(&auth.GenerateTokenClaimsOptions{
+		UserId: user.UserID.String(),
+	})
+	if err != nil {
+		s.logger.Error("failed to generate tokens", err)
+		return "", "", err
 	}
 
 	if hashedPassword != user.PasswordHash {
@@ -96,11 +75,8 @@ func (s *authService) SignIn(ctx context.Context, input *entity.SignInInput) (st
 		return "", "", ErrPasswordsDoNotMatch
 	}
 
-	accessToken, refreshToken, err := s.auth.GenerateTokens(&auth.GenerateTokenClaimsOptions{
-		UserId: user.UserID.String(),
-	})
-	if err != nil {
-		s.logger.Error("failed to generate tokens", err)
+	if err := s.userStorage.CreateRefreshToken(ctx, user.UserID, refreshToken); err != nil {
+		s.logger.Error("failed to create refresh token", err)
 		return "", "", err
 	}
 
