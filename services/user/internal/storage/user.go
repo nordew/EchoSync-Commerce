@@ -33,16 +33,10 @@ func (s *userStorage) Create(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (s *userStorage) Get(ctx context.Context, email, refreshToken string) (*entity.User, error) {
+func (s *userStorage) Get(ctx context.Context, email string) (*entity.User, error) {
 	var user entity.User
 
-	_, err := s.conn.ExecEx(ctx, "UPDATE users SET refresh_token=$1 WHERE email=$2", nil, refreshToken, email)
-	if err != nil {
-		s.logger.Error("failed to update refresh token", err)
-		return nil, err
-	}
-
-	err = s.conn.QueryRowEx(ctx, "SELECT * FROM users WHERE email=$1", nil, email).
+	err := s.conn.QueryRowEx(ctx, "SELECT * FROM users WHERE email=$1", nil, email).
 		Scan(&user.UserID, &user.Username, &user.Email, &user.PasswordHash, &user.RefreshToken, &user.StoresActive, &user.CreatedAt)
 	if err != nil {
 		s.logger.Error("failed to get user", err)
