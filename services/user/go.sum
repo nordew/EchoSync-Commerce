@@ -48,6 +48,12 @@ github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyua
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/nordew/EchoSync-protos v0.0.0-20240115125608-94d4d0e8d864 h1:4Seq86Jr/N8ljeQNQSyy46Vm2b4b3wqWJ+60G9dlZPs=
 github.com/nordew/EchoSync-protos v0.0.0-20240115125608-94d4d0e8d864/go.mod h1:Lt0bHna3UFQA1q/ibVjXZkxUKtrTPQK/xWm3o8JqrcA=
+github.com/nordew/EchoSync-protos v0.0.0-20240120194055-82a2c9f97e61 h1:w30ELMrrKWOI8qqhVZI3Ddg0VMkDZb1ywjGTgSf0Sm8=
+github.com/nordew/EchoSync-protos v0.0.0-20240120194055-82a2c9f97e61/go.mod h1:Lt0bHna3UFQA1q/ibVjXZkxUKtrTPQK/xWm3o8JqrcA=
+github.com/nordew/EchoSync-protos v0.0.0-20240120195447-4912cff3f4cb h1:n+ra0Pj3WDlQIyczLb0LE36qtbI0xUHvon7C4gmU9lA=
+github.com/nordew/EchoSync-protos v0.0.0-20240120195447-4912cff3f4cb/go.mod h1:Lt0bHna3UFQA1q/ibVjXZkxUKtrTPQK/xWm3o8JqrcA=
+github.com/nordew/EchoSync-protos v0.0.0-20240120200447-2bcd4a6490c6 h1:LraiShU23MRoofrzP38g2WIuSLpb+DtG6gHSIx9wmVg=
+github.com/nordew/EchoSync-protos v0.0.0-20240120200447-2bcd4a6490c6/go.mod h1:Lt0bHna3UFQA1q/ibVjXZkxUKtrTPQK/xWm3o8JqrcA=
 github.com/pelletier/go-toml/v2 v2.1.0 h1:FnwAJ4oYMvbT/34k9zzHuZNrhlz48GB3/s6at6/MHO4=
 github.com/pelletier/go-toml/v2 v2.1.0/go.mod h1:tJU2Z3ZkXwnxa4DPO899bsyIoywizdUvyaeZurnPPDc=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
